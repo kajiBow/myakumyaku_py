@@ -83,7 +83,7 @@ pip install -r requirements.txt
 ```
 
 ### 2. 二段階認証の設定
-1. 万博チケットサイトで二段階認証を **Google Authenticator (OTP)** のみに設定(メール認証等の他の認証は削除)
+1. [万博チケットサイト](https://usrmng.accounts.expo2025.or.jp/idmng/users/screen/mng/authSetSelectScreen)で二段階認証を **Google Authenticator (OTP)** のみに設定(メール認証等の他の認証は削除)
 2. プロフィール設定からQRコードのURLをコピー
 
 ### 3. ログイン情報の設定
