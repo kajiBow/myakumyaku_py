@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>時間指定予約設定 - EXPO予約ツール</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            min-height: 100vh;
+            padding: 16px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 24px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f59e0b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        input[type="text"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: #f9fafb;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #f59e0b;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+            width: 100%;
+        }
+
+        .btn-back {
+            background: #6b7280;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-danger-sm {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f9fafb;
+            color: #374151;
+            font-weight: 600;
+            font-size: 14px;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            font-size: 14px;
+            color: #1f2937;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        #message {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        #message:not(:empty) {
+            display: block;
+        }
+
+        .message-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #6ee7b7;
+        }
+
+        .message-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #fca5a5;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+
+            .btn-danger-sm {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: slideIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 時間指定予約設定</h1>
+            <p>指定した時刻に自動で予約を開始</p>
+        </div>
+
+        <div class="card">
+            <h2>➕ 新規スケジュール追加</h2>
+
+            <div class="form-group">
+                <label>実行時刻</label>
+                <input type="time" id="trigger_time" required>
+            </div>
+
+            <div class="form-group">
+                <label>パビリオン選択</label>
+                <select id="event_code">
+                    <option value="">--パビリオンを選択--</option>
+                    <option value="IC00">Null</option>
+                    <option value="IC09">インスタレーション</option>
+                    <option value="H5H0">リボーン体験</option>
+                    <option value="H5H9">モンハン</option>
+                    <option value="H5H3">人生ゲーム</option>
+                    <option value="HQH0">GUNDAM NEXT FUTURE PAVILION</option>
+                    <option value="HEH0">住友館</option>
+                    <option value="I300">betterCoBeing</option>
+                    <option value="C2N0">イタリア~1500</option>
+                    <option value="C2N3">イタリア1500~</option>
+                    <option value="EDF0">ヨルダン</option>
+                    <option value="I600">いのちの未来</option>
+                    <option value="HAH0">NTT</option>
+                    <option value="IF00">いのちの動的平衡</option>
+                    <option value="II00">超時空シアター</option>
+                    <option value="II06">ANIMA</option>
+                    <option value="IL00">EARTH MART</option>
+                    <option value="HCH0">電力館</option>
+                    <option value="C060">アイルランド ツアー30分</option>
+                    <option value="C063">アイルランド ツアー60分</option>
+                    <option value="C066">アイルランド ツアーなし</option>
+                    <option value="HUH6">ガスパビリオン</option>
+                    <option value="CCB0">クウェート</option>
+                    <option value="HGH0">ノモの国</option>
+                    <option value="H1H9">日本館</option>
+                    <option value="HIH0">三菱未来館</option>
+                    <option value="HOH0">ブルーオーシャン</option>
+                    <option value="H3H0">Womans</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>希望時間（HHMM形式）</label>
+                <input type="text" id="start_time" placeholder="例: 1030" required>
+            </div>
+
+            <button class="btn-success" onclick="addSchedule()">
+                ➕ スケジュールを追加
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>📋 登録済みスケジュール</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>実行時刻</th>
+                            <th>イベントコード</th>
+                            <th>希望時間</th>
+                            <th>ステータス</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTable">
+                        {% if schedules %}
+                            {% for schedule in schedules %}
+                            <tr>
+                                <td><strong>{{ schedule.get('trigger_time', '') }}</strong></td>
+                                <td>{{ schedule.get('event_code', '') }}</td>
+                                <td>{{ schedule.get('start_time', '') }}</td>
+                                <td>
+                                    {% if schedule.get('enabled', True) %}
+                                    <span class="status-badge status-pending">⏰ 待機中</span>
+                                    {% else %}
+                                    <span class="status-badge status-completed">✓ 実行済み</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn-danger-sm" onclick="deleteSchedule({{ loop.index0 }})">🗑️ 削除</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-state-icon">📭</div>
+                                        <p>登録されたスケジュールがありません</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="message"></div>
+        </div>
+
+        <button class="btn-back" onclick="location.href='/'">
+            ← メイン画面に戻る
+        </button>
+    </div>
+
+    <script>
+        function showMessage(msg, type="success") {
+            const box = document.getElementById("message");
+            box.textContent = msg;
+            box.className = type === "success" ? "message-success" : "message-error";
+            setTimeout(() => { box.textContent = ""; box.className = ""; }, 3000);
+        }
+
+        async function addSchedule() {
+            const trigger_time = document.getElementById("trigger_time").value;
+            const event_code = document.getElementById("event_code").value;
+            const start_time = document.getElementById("start_time").value;
+
+            if (!trigger_time || !event_code || !start_time) {
+                alert("すべての項目を入力してください");
+                return;
+            }
+
+            const res = await fetch('/schedule/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    trigger_time: trigger_time,
+                    event_code: event_code,
+                    start_time: start_time
+                })
+            });
+
+            const result = await res.json();
+            showMessage(result.message, "success");
+            setTimeout(() => location.reload(), 1000);
+        }
+
+        async function deleteSchedule(index) {
+            if (!confirm("このスケジュールを削除しますか？")) return;
+
+            const res = await fetch('/schedule/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ index: index })
+            });
+
+            const result = await res.json();
+            showMessage(result.message, "error");
+            setTimeout(() => location.reload(), 1000);
+        }
+    </script>
+</body>
+</html>

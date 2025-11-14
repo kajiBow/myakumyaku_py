@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>EXPO予約ツール</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 16px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 24px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .form-group small {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: #f9fafb;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-with-button {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-with-button input {
+            flex: 1;
+        }
+
+        button {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            padding: 10px 16px;
+            font-size: 14px;
+            width: auto;
+            min-width: 100px;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);
+        }
+
+        .cookie-monitor-box {
+            background: #f0f9ff;
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .cookie-monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .cookie-monitor-header strong {
+            font-size: 14px;
+            color: #0c4a6e;
+        }
+
+        #cookieStatus {
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: white;
+            font-weight: 500;
+        }
+
+        .monitor-controls {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .monitor-controls label {
+            font-size: 13px;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .monitor-controls input {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .button-group button {
+            flex: 1;
+        }
+
+        #statusMessage {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+        }
+
+        #statusMessage:not(:empty) {
+            display: block;
+        }
+
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #6ee7b7;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #fca5a5;
+        }
+
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 2px solid #93c5fd;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #fcd34d;
+        }
+
+        .link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            button {
+                padding: 12px 16px;
+                font-size: 15px;
+            }
+
+            .monitor-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .monitor-controls label {
+                grid-column: 1;
+            }
+        }
+
+        /* アニメーション */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎫 EXPO 2025 予約ツール</h1>
+            <p>自動予約システム（補正値対応）</p>
+        </div>
+
+        <form id="reservationForm">
+            <div class="card">
+                <h2 style="font-size: 18px; margin-bottom: 20px; color: #667eea;">📋 予約情報</h2>
+
+                <div class="form-group">
+                    <label>チケットID</label>
+                    <input type="text" name="ticket_ids" value="{{ saved.get('ticket_ids', '') }}" placeholder="例: 12345,67890" required>
+                    <small>複数の場合はカンマ区切りで入力</small>
+                </div>
+
+                <div class="form-group">
+                    <label>入場日</label>
+                    <div class="input-with-button">
+                        <input type="text" id="entrance_date" name="entrance_date" value="{{ saved.get('entrance_date', '') }}" placeholder="例: 20250515" required>
+                        <button type="button" class="btn-secondary" onclick="setToday()">📅 今日</button>
+                    </div>
+                    <small>8桁の数字（yyyymmdd形式）</small>
+                </div>
+
+                <div class="form-group">
+                    <label>予約時間</label>
+                    <input type="text" name="start_time" value="{{ saved.get('start_time', '') }}" placeholder="例: 1030" required>
+                    <small>4桁の数字（HHMM形式）</small>
+                </div>
+
+                <div class="form-group">
+                    <label>パビリオン選択</label>
+                    <select id="event_code_select" onchange="document.getElementById('event_code_input').value=this.value">
+                        <option value="">--パビリオンを選択--</option>
+                        <option value="IC00">Null</option>
+                        <option value="IC09">インスタレーション</option>
+                        <option value="H5H0">リボーン体験</option>
+                        <option value="H5H9">モンハン</option>
+                        <option value="H5H3">人生ゲーム</option>
+                        <option value="HQH0">GUNDAM NEXT FUTURE PAVILION</option>
+                        <option value="HEH0">住友館</option>
+                        <option value="I300">betterCoBeing</option>
+                        <option value="C2N0">イタリア~1500</option>
+                        <option value="C2N3">イタリア1500~</option>
+                        <option value="EDF0">ヨルダン</option>
+                        <option value="I600">いのちの未来</option>
+                        <option value="HAH0">NTT</option>
+                        <option value="IF00">いのちの動的平衡</option>
+                        <option value="II00">超時空シアター</option>
+                        <option value="II06">ANIMA</option>
+                        <option value="IL00">EARTH MART</option>
+                        <option value="HCH0">電力館</option>
+                        <option value="C060">アイルランド ツアー30分</option>
+                        <option value="C063">アイルランド ツアー60分</option>
+                        <option value="C066">アイルランド ツアーなし</option>
+                        <option value="HUH6">ガスパビリオン</option>
+                        <option value="CCB0">クウェート</option>
+                        <option value="HGH0">ノモの国</option>
+                        <option value="H1H9">日本館</option>
+                        <option value="HIH0">三菱未来館</option>
+                        <option value="HOH0">ブルーオーシャン</option>
+                        <option value="H3H0">Womans</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>イベントコード（直接入力）</label>
+                    <input type="text" id="event_code_input" name="event_code" placeholder="例: H5H0" value="{{ saved.get('event_code', '') }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>リクエスト間隔（秒）</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <input type="number" name="min_interval" value="{{ saved.get('min_interval', 0.5) }}" step="0.1" placeholder="最小" required>
+                            <small>最小間隔</small>
+                        </div>
+                        <div>
+                            <input type="number" name="max_interval" value="{{ saved.get('max_interval', 3.5) }}" step="0.1" placeholder="最大" required>
+                            <small>最大間隔</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="font-size: 18px; margin-bottom: 20px; color: #667eea;">🔐 認証設定</h2>
+
+                <div class="form-group">
+                    <label>セッションCookie</label>
+                    <div class="input-with-button">
+                        <input type="text" id="cookieInput" name="cookie" value="{{ saved.get('cookie', '') }}" placeholder="session_id=..." required>
+                        <button type="button" class="btn-secondary" onclick="pasteCookie()">📋 貼付</button>
+                    </div>
+
+                    <div style="margin-top: 12px;">
+                        <a href="/cookie/log" class="link">📊 Cookie無効履歴を見る</a>
+                    </div>
+
+                    <div class="cookie-monitor-box">
+                        <div class="cookie-monitor-header">
+                            <strong>🔍 Cookie監視</strong>
+                            <span id="cookieStatus">未チェック</span>
+                        </div>
+
+                        <div class="monitor-controls">
+                            <label>監視間隔:</label>
+                            <input type="number" id="monitorInterval" value="{{ saved.get('monitor_interval', 5) }}" min="1" max="60">
+                            <span style="font-size: 13px; color: #6b7280;">分</span>
+                        </div>
+
+                        <div class="button-group">
+                            <button type="button" class="btn-secondary" onclick="startMonitoring()" id="startMonitorBtn">開始</button>
+                            <button type="button" class="btn-secondary" onclick="stopMonitoring()" id="stopMonitorBtn" style="display:none;">停止</button>
+                            <button type="button" class="btn-secondary" onclick="checkCookieNow()">今すぐ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="font-size: 18px; margin-bottom: 20px; color: #667eea;">🔔 通知設定</h2>
+
+                <div class="form-group">
+                    <label>Discord Webhook URL（任意）</label>
+                    <div class="input-with-button">
+                        <input type="text" id="webhookInput" name="webhook_url" value="{{ saved.get('webhook_url', '') }}" placeholder="https://discord.com/api/webhooks/...">
+                        <button type="button" class="btn-secondary" onclick="testNotification()">🔔 テスト</button>
+                    </div>
+                    <small>予約成功時にDiscordへ通知</small>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn-primary" onclick="startReservation()">
+                    ▶️ 予約開始
+                </button>
+            </div>
+
+            <div class="button-group" style="margin-top: 8px;">
+                <button type="button" class="btn-danger" onclick="stopReservation()">
+                    ⏹️ 停止
+                </button>
+                <button type="button" class="btn-success" onclick="saveForm()">
+                    💾 保存
+                </button>
+            </div>
+
+            <button type="button" class="btn-warning" onclick="location.href='/schedule'" style="margin-top: 8px;">
+                📅 時間指定予約設定
+            </button>
+        </form>
+
+        <div id="statusMessage"></div>
+    </div>
+
+    <script>
+        let statusCheckInterval = null;
+        let cookieStatusInterval = null;
+        let lastCookieVersion = null;
+
+        window.onload = function() {
+            const savedValue = "{{ saved.get('event_code', '') }}";
+            if (savedValue) {
+                document.getElementById("event_code_input").value = savedValue;
+                const select = document.getElementById("event_code_select");
+                for (let opt of select.options) {
+                    if (opt.value === savedValue) {
+                        select.value = savedValue;
+                        break;
+                    }
+                }
+            }
+
+            updateCookieStatus();
+            cookieStatusInterval = setInterval(updateCookieStatus, 3000);
+        };
+
+        function showMessage(msg, type="success") {
+            const box = document.getElementById("statusMessage");
+            box.textContent = msg;
+            box.className = `status-${type}`;
+        }
+
+        async function updateCookieStatus() {
+            try {
+                const res = await fetch('/cookie/status');
+                const status = await res.json();
+
+                const statusSpan = document.getElementById('cookieStatus');
+                const startBtn = document.getElementById('startMonitorBtn');
+                const stopBtn = document.getElementById('stopMonitorBtn');
+
+                if (status.checking) {
+                    statusSpan.textContent = '⏳ チェック中...';
+                    statusSpan.style.color = '#f59e0b';
+                    statusSpan.style.background = '#fef3c7';
+                } else if (status.valid === true) {
+                    statusSpan.textContent = `✅ 有効 (${status.last_check || ''})`;
+                    statusSpan.style.color = '#059669';
+                    statusSpan.style.background = '#d1fae5';
+                } else if (status.valid === false) {
+                    statusSpan.textContent = `❌ 無効 (${status.last_check || ''})`;
+                    statusSpan.style.color = '#dc2626';
+                    statusSpan.style.background = '#fee2e2';
+                } else {
+                    statusSpan.textContent = status.message;
+                    statusSpan.style.color = '#6b7280';
+                    statusSpan.style.background = '#f3f4f6';
+                }
+
+                if (status.monitoring) {
+                    startBtn.style.display = 'none';
+                    stopBtn.style.display = 'block';
+                    statusSpan.textContent += ` (${status.interval}分)`;
+                } else {
+                    startBtn.style.display = 'block';
+                    stopBtn.style.display = 'none';
+                }
+
+                if (typeof status.cookie_version !== 'undefined') {
+                    if (lastCookieVersion === null) {
+                        lastCookieVersion = status.cookie_version;
+                    } else if (status.cookie_version !== lastCookieVersion) {
+                        lastCookieVersion = status.cookie_version;
+                        location.reload();
+                        return;
+                    }
+                }
+
+            } catch (err) {
+                console.error("Cookie status check error:", err);
+            }
+        }
+
+        async function startMonitoring() {
+            const interval = parseInt(document.getElementById('monitorInterval').value);
+
+            if (interval < 1 || interval > 60) {
+                alert("監視間隔は1〜60分の範囲で設定してください");
+                return;
+            }
+
+            const res = await fetch('/cookie/monitor/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ interval: interval })
+            });
+
+            const result = await res.json();
+            showMessage(result.message, result.success ? "success" : "error");
+            setTimeout(() => updateCookieStatus(), 500);
+        }
+
+        async function stopMonitoring() {
+            const res = await fetch('/cookie/monitor/stop', { method: 'POST' });
+            const result = await res.json();
+            showMessage(result.message, result.success ? "warning" : "error");
+            setTimeout(() => updateCookieStatus(), 500);
+        }
+
+        async function checkCookieNow() {
+            showMessage("🔍 Cookieチェック中...", "info");
+            const res = await fetch('/cookie/check', { method: 'POST' });
+            const result = await res.json();
+            showMessage(result.success ? "チェック実行中..." : result.message, result.success ? "info" : "error");
+            setTimeout(() => updateCookieStatus(), 2000);
+        }
+
+        async function checkStatus() {
+            try {
+                const res = await fetch('/status');
+                const result = await res.json();
+                if (result.running && result.status_code !== null) {
+                    const countText = result.count > 1 ? ` ×${result.count}` : '';
+                    showMessage(`🔄 処理中... [Status: ${result.status_code}]${countText}`, "info");
+                } else if (!result.running) {
+                    if (statusCheckInterval) {
+                        clearInterval(statusCheckInterval);
+                        statusCheckInterval = null;
+                    }
+                    if (result.status_code === 200) {
+                        showMessage("✅ 予約成功！", "success");
+                    }
+                }
+            } catch (err) {
+                console.error("Status check error:", err);
+            }
+        }
+
+        async function saveForm() {
+            const form = document.getElementById('reservationForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            data.monitor_interval = document.getElementById('monitorInterval').value;
+
+            const res = await fetch('/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            showMessage(result.message, "success");
+        }
+
+        async function startReservation() {
+            const form = document.getElementById('reservationForm');
+            const formData = new FormData(form);
+            const res = await fetch('/start', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await res.json();
+            showMessage("✅ 予約開始しました", "info");
+
+            setTimeout(() => {
+                if (statusCheckInterval) clearInterval(statusCheckInterval);
+                statusCheckInterval = setInterval(checkStatus, 1000);
+            }, 1000);
+        }
+
+        async function stopReservation() {
+            const res = await fetch('/stop', { method: 'POST' });
+            const result = await res.json();
+            showMessage("🛑 停止しました", "warning");
+
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+                statusCheckInterval = null;
+            }
+        }
+
+        function setToday() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const dateString = `${year}${month}${day}`;
+
+            document.getElementById("entrance_date").value = dateString;
+            showMessage(`📅 今日の日付 (${dateString}) を設定しました`, "success");
+        }
+
+        async function pasteCookie() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById("cookieInput").value = text;
+                showMessage("📋 クリップボードから貼り付けました", "success");
+            } catch (err) {
+                alert("クリップボードの読み取りに失敗しました");
+            }
+        }
+
+        async function testNotification() {
+            const webhookUrl = document.getElementById("webhookInput").value;
+            if (!webhookUrl) {
+                alert("Webhook URLを入力してください");
+                return;
+            }
+
+            showMessage("📤 テスト通知を送信中...", "info");
+
+            const res = await fetch('/test_notification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ webhook_url: webhookUrl })
+            });
+
+            const result = await res.json();
+            showMessage(result.success ? "✅ テスト通知を送信しました！" : "❌ 送信失敗: " + result.message, result.success ? "success" : "error");
+        }
+    </script>
+</body>
+</html>

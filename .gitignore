@@ -1,0 +1,38 @@
+# Claude Code
+.claude/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+
+# Config files with sensitive data
+auth_config.json
+cookie.txt
+form_data.json
+monitor_settings.json
+scheduled_tasks.json
+session_info.json
+
+# Screenshots
+error_screenshot.png
