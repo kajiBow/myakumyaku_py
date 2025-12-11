@@ -20,7 +20,7 @@
 - **処理フロー**:
   1. WebUIでパビリオン選択
   2. https://expo.ebii.net/ から空き枠情報を取得
-  3. 空きを検出したら指定時刻にPOSTリクエスト送信
+  3. 空きを検出したら即POSTリクエスト送信
 
 #### FullAutoReserverの画面
 ![FullAutoReserver画面](image/3.fullAutoReserver.png)
@@ -157,6 +157,7 @@ venv\Scripts\activate     # Windows
 - [ ] パビリオンの空き枠情報をebii.net経由ではなく、 get関連フォルダのシステムを用いて確認する。
 - [ ] POSTリクエストの並列化（Deno/TypeScriptで高速非同期処理）
 - [ ] adjustments.pyはその日の最後のパビリオン時間をもとに補正しているため、時間帯によって補正値が異なる場合に対処できない→最初の時間で補正させる。パラメータエラーが起きたらadjutments.pyが自動で走るようにする
+
 
 
 
